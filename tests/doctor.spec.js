@@ -17,10 +17,10 @@ test('get doctor', async ({ page }) => {
   await page.locator(`#password`).type(process.env.USERPASSWORD);
   await new Promise(res => setTimeout(res, 1000));
   await page.locator(`.validatePassword`).click();
-  await new Promise(res => setTimeout(res, 10000));
+  await new Promise(res => setTimeout(res, 5000));
   await page.goto(process.env.DOCTOR_URL);
 
-  await new Promise(res => setTimeout(res, 10000));
+  await new Promise(res => setTimeout(res, 3000));
   await page.locator(`.showSearchOnlineAuthntication`).click();
 
   const text = await page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).textContent();

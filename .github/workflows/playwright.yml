@@ -1,4 +1,5 @@
 name: Playwright Tests
+
 on:
   schedule:
     - cron: "*/15 7-22 * * *"
@@ -7,7 +8,7 @@ on:
 jobs:
   test:
     environment: nir
-    timeout-minutes: 60
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     env:
       TTTID: ${{ secrets.TTTID }}
@@ -18,6 +19,7 @@ jobs:
       TTTMYPHONE: ${{ secrets.TTTMYPHONE }}
       LOGIN_URL: ${{ vars.LOGIN_URL }}
       DOCTOR_URL: ${{ vars.DOCTOR_URL }}
+      CI: true
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -31,3 +33,9 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: Run Playwright tests
         run: pnpm exec playwright test
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 1
