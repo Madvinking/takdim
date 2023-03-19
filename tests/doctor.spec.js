@@ -2,15 +2,14 @@
 import { test, expect } from '@playwright/test';
 import dayjs from 'dayjs';
 import twilio from 'twilio';
-import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import * as dotenv from 'dotenv';
 dotenv.config();
 const accountSid = process.env.TTTID;
 const authToken = process.env.TTTTOKEN;
 
 const client = twilio(accountSid, authToken);
 
-
-test('get docktor', async ({ page }) => {
+test('get doctor', async ({ page }) => {
   await page.goto(process.env.LOGIN_URL);
 
   await page.locator(`a[href="#IdentifyWithPassword"]`).click();
@@ -21,7 +20,7 @@ test('get docktor', async ({ page }) => {
   await new Promise(res => setTimeout(res, 5000));
   await page.goto(process.env.DOCTOR_URL);
 
-  await new Promise(res => setTimeout(res, 3000));
+  await new Promise(res => setTimeout(res, 5000));
   await page.locator(`.showSearchOnlineAuthntication`).click();
 
   const text = await page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).textContent();
@@ -40,6 +39,11 @@ test('get docktor', async ({ page }) => {
     });
   } else {
     console.log('The target date is not in the next 2 weeks: ', firstFreeDate);
+    await client.messages.create({
+      from: process.env.TTTTPHONE,
+      to: process.env.TTTMYPHONE,
+      body: `found appointment at ${firstFreeDate}`
+    });
   }
 
 });
