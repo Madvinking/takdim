@@ -15,7 +15,7 @@ export default defineConfig({
   use: {
     headless: process.env.CI ? true : false,
     actionTimeout: 20000,
-    trace: 'on',
+    trace: 'off',
   },
   projects: [
     {

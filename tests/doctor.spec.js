@@ -40,11 +40,6 @@ test('get doctor', async ({ page }) => {
     });
   } else {
     console.log('The target date is not in the next 2 weeks: ', firstFreeDate);
-    await client.messages.create({
-      from: process.env.TTTTPHONE,
-      to: process.env.TTTMYPHONE,
-      body: `found appointment at ${firstFreeDate}`
-    });
   }
 
 });
