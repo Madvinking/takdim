@@ -16,6 +16,8 @@ jobs:
       USERPASSWORD: ${{ secrets.USERPASSWORD }}
       TTTTPHONE: ${{ secrets.TTTTPHONE }}
       TTTMYPHONE: ${{ secrets.TTTMYPHONE }}
+      LOGIN_URL: ${{ vars.LOGIN_URL }}
+      DOCTOR_URL: ${{ vars.DOCTOR_URL }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -29,6 +31,3 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
       - name: Run Playwright tests
         run: pnpm exec playwright test
-        env:
-          LOGIN_URL: ${{ env.LOGIN_URL }}
-          DOCTOR_URL: ${{ env.DOCTOR_URL }}
