@@ -16,8 +16,6 @@ jobs:
       USERPASSWORD: ${{ secrets.USERPASSWORD }}
       TTTTPHONE: ${{ secrets.TTTTPHONE }}
       TTTMYPHONE: ${{ secrets.TTTMYPHONE }}
-      LOGIN_URL: ${{ env.LOGIN_URL }}
-      DOCTOR_URL: ${{ env.DOCTOR_URL }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -29,5 +27,10 @@ jobs:
         run: pnpm install
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps chromium
+      - name: Set environment variables
+        env:
+          LOGIN_URL: ${{ env.LOGIN_URL }}
+          DOCTOR_URL: ${{ env.DOCTOR_URL }}
+        run: echo "Setting environment variables"
       - name: Run Playwright tests
         run: pnpm exec playwright test
