@@ -2,9 +2,7 @@ name: Playwright Tests
 
 on:
   schedule:
-    - cron: "*/15 7-22 * * *"
-  push:
-    branches: [main, master]
+    - cron: "*/10 7-22 * * *"
 jobs:
   test:
     environment: nir
