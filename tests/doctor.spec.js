@@ -2,7 +2,8 @@
 import { test, expect } from '@playwright/test';
 import dayjs from 'dayjs';
 import twilio from 'twilio';
-
+import * as dotenv from 'dotenv' // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+dotenv.config();
 const accountSid = process.env.TTTID;
 const authToken = process.env.TTTTOKEN;
 
@@ -20,7 +21,7 @@ test('get docktor', async ({ page }) => {
   await new Promise(res => setTimeout(res, 5000));
   await page.goto(process.env.DOCTOR_URL);
 
-  await new Promise(res => setTimeout(res, 5000));
+  await new Promise(res => setTimeout(res, 3000));
   await page.locator(`.showSearchOnlineAuthntication`).click();
 
   const text = await page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).textContent();
@@ -35,12 +36,10 @@ test('get docktor', async ({ page }) => {
     await client.messages.create({
       from: process.env.TTTTPHONE,
       to: process.env.TTTMYPHONE,
-      body: `found appoinment at ${firstFreeDate}`
+      body: `found appointment at ${firstFreeDate}`
     });
   } else {
     console.log('The target date is not in the next 2 weeks: ', firstFreeDate);
   }
-
-  await new Promise(res => setTimeout(res, 30000));
 
 });
