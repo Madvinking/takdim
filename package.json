@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "start": "pnpx playwright test",
+    "trace": "pnpx playwright show-trace"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
