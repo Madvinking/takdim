@@ -27,10 +27,8 @@ jobs:
         run: pnpm install
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps chromium
-      - name: Set environment variables
+      - name: Run Playwright tests
+        run: pnpm exec playwright test
         env:
           LOGIN_URL: ${{ env.LOGIN_URL }}
           DOCTOR_URL: ${{ env.DOCTOR_URL }}
-        run: echo "Setting environment variables"
-      - name: Run Playwright tests
-        run: pnpm exec playwright test
