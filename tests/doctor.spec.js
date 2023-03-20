@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import twilio from 'twilio';
 import * as dotenv from 'dotenv';
 dotenv.config();
+
 const accountSid = process.env.TTTID;
 const authToken = process.env.TTTTOKEN;
 
@@ -40,14 +41,15 @@ test('get doctor', async ({ page }) => {
       page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).textContent(),
       page.locator(`#availableForDateTitle`).textContent()
     ]);
-    const firstFreeDate = text.match(/[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9]/)?.at(0)?.trim();
+    const [day, month, year] = text.match(/[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9]/)?.at(0)?.trim().split('/');
 
-    const currentDate = dayjs(firstFreeDate, "DD/MM/YYYY");
+    const currentDate = dayjs().date(day).month(month - 1).year(+`20${year}`);
 
-    const message = `${doctorName} next appointment: ${firstFreeDate}`;
-    console.log(message);
     const now = dayjs();
     const next2Weeks = now.add(2, 'week');
+    const message = `${doctorName} next appointment: ${currentDate.format('DD/MM/YYYY')} ${currentDate.isBefore(next2Weeks) && currentDate.isAfter(now)}`;
+    console.log(message);
+
     if (currentDate.isBefore(next2Weeks) && currentDate.isAfter(now)) {
       await client.messages.create({
         from: process.env.TTTTPHONE,
