@@ -9,6 +9,8 @@ const authToken = process.env.TTTTOKEN;
 
 const client = twilio(accountSid, authToken);
 
+const urls = process.env.DOCTOR_URL?.split(':::') ?? [];
+
 test('get doctor', async ({ page }) => {
 
   await page.goto(process.env.LOGIN_URL);
@@ -19,25 +21,39 @@ test('get doctor', async ({ page }) => {
 
   await page.locator(`.validatePassword`).click();
   await page.getByText('מוצגים עדכונים מחצי השנה האחרונה כולל הודעות שנדרש לאשר').waitFor();
-  await page.goto(process.env.DOCTOR_URL, { waitUntil: 'networkidle' });
-  await page.locator(`.showSearchOnlineAuthntication`).click();
 
-  const text = await page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).textContent();
-  const firstFreeDate = text.match(/[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9]/)?.at(0)?.trim();
 
-  const currentDate = dayjs(firstFreeDate, "DD/MM/YYYY");
+  for (let url of urls) {
+    await page.goto(url, { waitUntil: 'networkidle' });
+    await Promise.race([
+      page.locator(`.showSearchOnlineAuthntication`).click(),
+      page.getByText('ביקור רגיל').click().then(() => page.getByText('המשך להצגת תורים פנויים').click()),
+      page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).waitFor(),
+      page.locator(`#availableForDateTitle`).waitFor()
+    ]);
 
-  const now = dayjs();
-  const next2Weeks = now.add(2, 'week');
-  if (currentDate.isBefore(next2Weeks) && currentDate.isAfter(now)) {
-    console.log('The target date is in the next 2 weeks: ', firstFreeDate);
-    await client.messages.create({
-      from: process.env.TTTTPHONE,
-      to: process.env.TTTMYPHONE,
-      body: `found appointment at ${firstFreeDate}`
-    });
-  } else {
-    console.log('The target date is not in the next 2 weeks: ', firstFreeDate);
+    const doctorName = await Promise.race([page.locator(`[class*="DoctorDetails__detailsSection"]`).textContent(),
+    page.locator(`[class*="docPropTitle"]`).textContent()
+    ]);
+
+    const text = await Promise.race([
+      page.locator(`[class*="TimeSelect__availableForDateTitleTimeSelect"]`).textContent(),
+      page.locator(`#availableForDateTitle`).textContent()
+    ]);
+    const firstFreeDate = text.match(/[0-9][0-9]\/[0-9][0-9]\/[0-9][0-9]/)?.at(0)?.trim();
+
+    const currentDate = dayjs(firstFreeDate, "DD/MM/YYYY");
+
+    const message = `${doctorName} next appointment: ${firstFreeDate}`;
+    console.log(message);
+    const now = dayjs();
+    const next2Weeks = now.add(2, 'week');
+    if (currentDate.isBefore(next2Weeks) && currentDate.isAfter(now)) {
+      await client.messages.create({
+        from: process.env.TTTTPHONE,
+        to: process.env.TTTMYPHONE,
+        body: `${message}\n${url}`
+      });
+    }
   }
-
 });
