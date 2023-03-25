@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "playwright test",
-    "trace": "playwright show-trace"
+    "start": "pnpx playwright test",
+    "trace": "pnpx playwright show-trace"
   },
   "keywords": [],
   "author": "",

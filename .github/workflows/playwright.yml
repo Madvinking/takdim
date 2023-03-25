@@ -1,8 +1,10 @@
 name: Playwright Tests
 
 on:
-  schedule:
-    - cron: "*/10 5-20 * * *"
+  # schedule:
+  #   - cron: "*/20 5-20 * * *"
+  pull_request:
+    types: [review_requested]
 jobs:
   test:
     environment: nir
